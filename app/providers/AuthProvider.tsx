@@ -1,10 +1,13 @@
 import axios from 'axios';
-import { createContext, FC, useMemo, useState } from 'react';
-import { Alert } from 'react-native';
 import {
-  IOperationResult,
-  OperationCode,
-} from '../api/interfaces/operationResult';
+  createContext,
+  Dispatch,
+  FC,
+  SetStateAction,
+  useMemo,
+  useState,
+} from 'react';
+import { IOperationResult } from '../api/interfaces/operationResult';
 import {
   IAuthRequest,
   IAuthResponse,
@@ -12,7 +15,6 @@ import {
   IRegistrationRequest,
 } from '../api/interfaces/auth';
 import { API_URL } from '../api';
-import * as Keychain from 'react-native-keychain';
 import * as SecureStore from 'expo-secure-store';
 
 interface IContext {
@@ -22,6 +24,9 @@ interface IContext {
   register: (regRequest: IRegistrationRequest) => Promise<boolean>;
   logout: () => Promise<void>;
   getToken: () => Promise<string | null>;
+  error: string | null;
+  setError: Dispatch<SetStateAction<string | null>>;
+  clearError: () => void;
 }
 
 export const AuthContext = createContext<IContext>({} as IContext);
@@ -30,6 +35,10 @@ export const AuthProvider: FC = ({ children }) => {
   const [user, setUser] = useState<IPerson | null>();
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const [error, setError] = useState<string | null>(null);
+
+  const clearError = () => setError(null);
 
   const register = async (
     regRequest: IRegistrationRequest
@@ -50,7 +59,7 @@ export const AuthProvider: FC = ({ children }) => {
 
       return false;
     } catch (e: any) {
-      Alert.alert('Ошибка авторизации', e?.response?.data?.message);
+      setError(e?.response?.data?.message);
       return false;
     } finally {
       setIsLoading(false);
@@ -73,7 +82,7 @@ export const AuthProvider: FC = ({ children }) => {
         await SecureStore.setItemAsync('token', data.result!.token);
       }
     } catch (e: any) {
-      Alert.alert('Ошибка авторизации', e?.response?.data?.message);
+      setError(e?.response?.data?.message);
     } finally {
       setIsLoading(false);
     }
@@ -87,17 +96,25 @@ export const AuthProvider: FC = ({ children }) => {
 
   const getToken = async (): Promise<string | null> => {
     try {
-      const token = await SecureStore.getItemAsync('token');
-      return token;
+      return await SecureStore.getItemAsync('token').then(token => token);
     } catch (e: any) {
-      console.log(e);
       return null;
     }
   };
 
   const value = useMemo(
-    () => ({ user, isLoading, login, register, logout, getToken }),
-    [user, isLoading]
+    () => ({
+      user,
+      isLoading,
+      login,
+      register,
+      logout,
+      getToken,
+      error,
+      clearError,
+      setError,
+    }),
+    [user, isLoading, error, setError]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

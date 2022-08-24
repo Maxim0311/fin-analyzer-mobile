@@ -1,12 +1,17 @@
-import { View, Text } from 'react-native';
 import React, { FC } from 'react';
 import { AuthProvider } from './AuthProvider';
-import { RoomServiceProvider } from '../api/service/room-service';
+import { RoomServiceProvider } from '../api/service/RoomService';
+import RoomProvider, { RoomContext } from './RoomProvider';
+import { CategoryServiceProvider } from '../api/service/CategoryService';
 
 export const HeadProvider: FC = ({ children }) => {
   return (
     <AuthProvider>
-      <RoomServiceProvider>{children}</RoomServiceProvider>
+      <RoomProvider>
+        <RoomServiceProvider>
+          <CategoryServiceProvider>{children}</CategoryServiceProvider>
+        </RoomServiceProvider>
+      </RoomProvider>
     </AuthProvider>
   );
 };

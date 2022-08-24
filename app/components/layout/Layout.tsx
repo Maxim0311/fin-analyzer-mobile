@@ -3,22 +3,15 @@ import React, { FC } from 'react';
 import { useTailwind } from 'tailwind-rn';
 
 interface ILayout {
-  isScrollView: boolean;
+  isScrollView?: boolean;
 }
 
-const Layout: FC<ILayout> = ({ children, isScrollView }) => {
-  const tw = useTailwind();
+const Layout: FC<ILayout> = ({ children, isScrollView = false }) => {
   return (
-    <View style={tw('p-200')}>
+    <View style={{ padding: '10%' }}>
       {isScrollView ? <ScrollView>{children}</ScrollView> : { children }}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    height: 100,
-  },
-});
 
 export default Layout;

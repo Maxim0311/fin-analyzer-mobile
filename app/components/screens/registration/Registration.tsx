@@ -1,13 +1,14 @@
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import Field from '../../ui/Field';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../../hooks/useAuth';
 import { IRegistrationRequest } from '../../../api/interfaces/auth';
 import Button from '../../ui/Button';
+import Error from '../../ui/Error';
 
 const Registration: FC = () => {
-  const { register, isLoading } = useAuth();
+  const { register, isLoading, error, setError, clearError } = useAuth();
 
   const navigation = useNavigation();
 
@@ -20,25 +21,31 @@ const Registration: FC = () => {
   const isPasswordConfirm = (): boolean => data.password === confirmPassword;
 
   const registerHandler = async () => {
+    clearError();
+
     if (!isPasswordConfirm()) {
-      Alert.alert('Ошибка', 'Пароли не совпадают');
+      setError('Пароли не совпадают');
       return;
     }
 
     if (await register(data)) navigation.navigate('Auth');
   };
 
+  useEffect(() => {
+    clearError();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.text}>Зарегистрироваться</Text>
-        <Text style={styles.text}></Text>
         <Field
           onChange={value => {
             setData({ ...data, login: value });
           }}
           value={data.login}
           placeholder="Логин"
+          style={styles.input}
         />
         <Field
           onChange={value => {
@@ -46,12 +53,14 @@ const Registration: FC = () => {
           }}
           value={data.firstname}
           placeholder="Имя"
+          style={styles.input}
         />
         <Field
           onChange={value => {
             setData({ ...data, lastname: value });
           }}
           value={data.lastname}
+          style={styles.input}
           placeholder="Фамилия"
         />
         <Field
@@ -59,6 +68,7 @@ const Registration: FC = () => {
             setData({ ...data, middlename: value });
           }}
           value={data.middlename}
+          style={styles.input}
           placeholder="Отчество"
         />
         <Field
@@ -67,6 +77,7 @@ const Registration: FC = () => {
           }}
           value={data.password}
           placeholder="Пароль"
+          style={styles.input}
           isSecure={true}
         />
         <Field
@@ -75,12 +86,15 @@ const Registration: FC = () => {
           }}
           value={confirmPassword}
           placeholder="Повторите пароль"
+          style={styles.input}
           isSecure={true}
         />
+        {error && <Error style={{ marginTop: 10 }} text={error} />}
         <Button
+          style={{ marginTop: 10 }}
           disabled={isLoading}
           title="Зарегистрироваться"
-          onPress={() => registerHandler()}
+          onPress={registerHandler}
         />
       </View>
 
@@ -107,12 +121,16 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 30,
+    marginBottom: 10,
   },
   bottomText: {
     marginTop: 10,
     textAlign: 'right',
     opacity: 0.5,
     fontSize: 15,
+  },
+  input: {
+    marginTop: 10,
   },
 });
 

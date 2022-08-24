@@ -1,13 +1,14 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 import Field from '../../ui/Field';
 import { useNavigation } from '@react-navigation/native';
 import Button from '../../ui/Button';
 import { IAuthRequest } from '../../../api/interfaces/auth';
+import Error from '../../ui/Error';
 
 const Auth: FC = () => {
-  const { isLoading, login } = useAuth();
+  const { isLoading, login, error, clearError } = useAuth();
 
   const navigation = useNavigation();
 
@@ -15,6 +16,15 @@ const Auth: FC = () => {
     login: '',
     password: '',
   });
+
+  const loginHandler = () => {
+    clearError();
+    login(data);
+  };
+
+  useEffect(() => {
+    clearError();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -26,6 +36,7 @@ const Auth: FC = () => {
           }}
           value={data.login}
           placeholder="Логин"
+          style={styles.input}
         />
         <Field
           onChange={value => {
@@ -34,11 +45,14 @@ const Auth: FC = () => {
           value={data.password}
           placeholder="Пароль"
           isSecure={true}
+          style={styles.input}
         />
+        {error && <Error style={{ marginTop: 10 }} text={error} />}
         <Button
+          style={{ marginTop: 10 }}
           disabled={isLoading}
           title="Войти"
-          onPress={() => login(data)}
+          onPress={loginHandler}
         />
       </View>
 
@@ -71,6 +85,9 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     opacity: 0.5,
     fontSize: 15,
+  },
+  input: {
+    marginTop: 10,
   },
 });
 

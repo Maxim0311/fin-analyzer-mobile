@@ -1,16 +1,27 @@
 import { View, Text, Pressable } from 'react-native';
-import React from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import React, { FC, useEffect } from 'react';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { useAuth } from '../../../hooks/useAuth';
+import { useNavigation } from '@react-navigation/native';
 
-const Profile = () => {
+interface IProfile {
+  route: any;
+}
+
+const Profile: FC<IProfile> = ({ route }) => {
   const { logout } = useAuth();
+  const navigation = useNavigation();
 
   return (
     <View style={{ left: '80%', top: '3%' }}>
       <Pressable onPress={logout}>
-        <Icon name="exit" size={30} />
+        <Icon name="md-exit-outline" size={30} />
         <Text>Выход</Text>
+      </Pressable>
+
+      <Pressable onPress={() => navigation.navigate('Room')}>
+        <Icon name="md-exit-outline" size={30} />
+        <Text>Test</Text>
       </Pressable>
     </View>
   );

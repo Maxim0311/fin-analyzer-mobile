@@ -1,3 +1,4 @@
+import { MenuProvider } from 'react-native-popup-menu';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Navigation from './app/navigation/Navigation';
@@ -7,7 +8,9 @@ export default function App() {
   return (
     <SafeAreaView style={{ height: '100%' }}>
       <HeadProvider>
-        <Navigation />
+        <MenuProvider>
+          <Navigation />
+        </MenuProvider>
       </HeadProvider>
     </SafeAreaView>
   );
