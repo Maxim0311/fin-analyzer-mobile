@@ -6,6 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 import Button from '../../ui/Button';
 import { IAuthRequest } from '../../../api/interfaces/auth';
 import Error from '../../ui/Error';
+import { useRoomService } from '../../../api/service/RoomService';
+import { IRoomCreate } from '../../../api/interfaces/room';
 
 const Auth: FC = () => {
   const { isLoading, login, error, clearError } = useAuth();
