@@ -3,8 +3,8 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  ActivityIndicator,
   Pressable,
+  RefreshControl,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useRoom } from '../../../../providers/RoomProvider';
@@ -15,6 +15,9 @@ import Field from '../../../ui/Field';
 import { useCategoryService } from '../../../../api/service/CategoryService';
 import Icon from '../../../ui/Icon';
 import { useNavigation } from '@react-navigation/native';
+import NotFound from '../../../ui/NotFound';
+import CategoriesItemModal from './CategoriesItemModal';
+import Modal from 'react-native-modal';
 
 const items = [
   { key: null, text: 'Все' },
@@ -23,9 +26,8 @@ const items = [
 ];
 
 const Categories = () => {
-  const { roomId } = useRoom();
-
-  const { categories, error, clearError, isLoading } = useCategoryService();
+  const { categories, error, clearError, isLoading, getAllCategories } =
+    useCategoryService();
 
   const navigation = useNavigation();
 
@@ -33,17 +35,29 @@ const Categories = () => {
 
   const [search, setSearch] = useState('');
 
+  const categoryClickHandler = (id: number) => {
+    setCurrentCat(categories[id]);
+    setModalVisible(true);
+  };
+
   const filterItem = (item: ICategory) =>
     select !== null
       ? item.isExpenditure === select &&
         item.name.toLocaleLowerCase().includes(search.toLowerCase())
       : item.name.toLocaleLowerCase().includes(search.toLowerCase());
 
-  const fetchCategories = () => useEffect(() => {}, [search]);
+  const fetchCategories = () => {
+    clearError();
+    getAllCategories();
+  };
 
   useEffect(() => {
-    console.log(categories);
+    fetchCategories();
   }, []);
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const [currentCat, setCurrentCat] = useState<ICategory>(null);
 
   return (
     <View style={styles.container}>
@@ -63,23 +77,40 @@ const Categories = () => {
         isSearch
       />
 
+      <CategoriesItemModal
+        isVisible={modalVisible}
+        setIsVisible={setModalVisible}
+        category={currentCat}
+      />
+
       <FilterList items={items} onPress={key => setSelect(key)} />
-      <ScrollView>
+
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            enabled
+            refreshing={isLoading}
+            onRefresh={fetchCategories}
+          />
+        }
+      >
         <View style={styles.categoryContainer}>
           {categories &&
             categories
               .filter(item => filterItem(item))
-              .map(item => (
+              .map((item, index) => (
                 <CategoryItem
                   key={item.id}
-                  iconAuthor="Entypo"
-                  iconName="drink"
+                  iconAuthor={item.iconAuthor}
+                  iconName={item.iconName}
                   text={item.name}
-                  onPress={() => alert(item.description)}
+                  color={item.color}
+                  onPress={() => categoryClickHandler(index)}
                 />
               ))}
-          {isLoading && <ActivityIndicator />}
         </View>
+        {error && <NotFound title={error!} styles={{ marginTop: 20 }} />}
+        {categories?.length === 0 && <NotFound styles={{ marginTop: 20 }} />}
       </ScrollView>
     </View>
   );

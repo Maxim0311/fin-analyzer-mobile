@@ -21,6 +21,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import Header from '../components/layout/header/Header';
 import Categories from '../components/screens/room/categories/Categories';
 import CategoryCreate from '../components/screens/room/categories/create/CategoryCreate';
+import CategoryUpdate from '../components/screens/room/categories/update/CategoryUpdate';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -126,6 +127,10 @@ const CategoryStack = () => {
       <Stack.Screen
         name="CategoryCreate"
         component={CategoryCreate}
+      ></Stack.Screen>
+      <Stack.Screen
+        name="CategoryUpdate"
+        component={CategoryUpdate}
       ></Stack.Screen>
     </Stack.Navigator>
   );

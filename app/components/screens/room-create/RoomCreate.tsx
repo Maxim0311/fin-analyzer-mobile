@@ -6,11 +6,14 @@ import Field from '../../ui/Field';
 import { IRoomCreate } from '../../../api/interfaces/room';
 import { useRoomService } from '../../../api/service/RoomService';
 import Button from '../../ui/Button';
+import { useRoom } from '../../../providers/RoomProvider';
 
 const RoomCreate = () => {
   const navigation = useNavigation();
 
   const { createRoom, isLoading, error, clearError } = useRoomService();
+
+  const { roomId } = useRoom();
 
   const [data, setData] = useState<IRoomCreate>({
     name: '',
@@ -23,7 +26,7 @@ const RoomCreate = () => {
 
     const response = await createRoom(data);
 
-    if (response.success) navigation.navigate('Room');
+    if (response.success) navigation.navigate('Home');
   };
 
   useEffect(() => {

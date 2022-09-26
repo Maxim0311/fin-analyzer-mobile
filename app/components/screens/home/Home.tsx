@@ -75,6 +75,8 @@ const Home: FC = () => {
     }
   };
 
+  const room: IRoom = {} as IRoom;
+
   useEffect(() => {
     fetchAllRooms();
   }, []);
@@ -145,15 +147,7 @@ const Home: FC = () => {
               onPress={() => roomPressHandler(item.id)}
             />
           ))}
-        {/* {data &&
-          data.result?.items.map(item => (
-            <RoomItem
-              key={item.id}
-              name={item.name}
-              description={item.description}
-              onPress={() => roomPressHandler(item.id)}
-            />
-          ))} */}
+
         {error && <NotFound title={error!} styles={{ marginTop: 20 }} />}
       </ScrollView>
     </View>

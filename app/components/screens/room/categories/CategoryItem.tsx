@@ -7,6 +7,7 @@ interface ICategoryItem {
   text: string;
   iconAuthor: IconAuthor;
   iconName: string;
+  color: string;
   onPress: () => void;
 }
 
@@ -15,10 +16,17 @@ const CategoryItem: FC<ICategoryItem> = ({
   iconAuthor,
   iconName,
   onPress,
+  color,
 }) => {
   return (
     <Pressable onPress={onPress} style={styles.container}>
-      <Icon author={iconAuthor} name={iconName} size={55} style={styles.icon} />
+      <Icon
+        author={iconAuthor}
+        name={iconName}
+        size={50}
+        style={styles.icon}
+        color={color}
+      />
       <Text style={styles.text}>{text}</Text>
     </Pressable>
   );

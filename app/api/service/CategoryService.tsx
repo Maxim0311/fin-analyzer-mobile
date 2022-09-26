@@ -12,18 +12,22 @@ import { useAuth } from '../../hooks/useAuth';
 import axios from 'axios';
 import { API_URL } from '../../api';
 import { IOperationResult } from '../interfaces/operationResult';
+import { useRoom } from '../../providers/RoomProvider';
 
 interface IContext {
   isLoading: boolean;
   error: string | null | undefined;
   categories: ICategory[];
   clearError: () => void;
+  getAllCategories: () => Promise<void>;
 }
 
 const CategoryServiceContext = createContext<IContext>({} as IContext);
 
 export const CategoryServiceProvider: FC = ({ children }) => {
   const { getToken, user } = useAuth();
+
+  const { roomId } = useRoom();
 
   const [token, setToken] = useState<string | null>();
 
@@ -38,7 +42,7 @@ export const CategoryServiceProvider: FC = ({ children }) => {
     getToken().then(jwt => setToken(jwt));
   }, []);
 
-  const getAllCategories = async (roomId: number) => {
+  const getAllCategories = async () => {
     try {
       setIsLoading(true);
 
@@ -71,6 +75,7 @@ export const CategoryServiceProvider: FC = ({ children }) => {
       setError,
       categories,
       clearError,
+      getAllCategories,
     }),
     [isLoading, error, categories]
   );
